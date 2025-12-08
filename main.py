@@ -8,10 +8,10 @@ prekazka_test = Prekazka(screen, 100, 100, "red")
 clock = pygame.time.Clock()
 running = True
 list_prekazok = []
-list_prekazok.append(Prekazka(screen, 100, 100, "red"))
-list_prekazok.append(Prekazka(screen, 300, 150, "red"))
+list_prekazok.append(Prekazka(screen, 100, 100, "red", 1))
+list_prekazok.append(Prekazka(screen, 300, 250, "orange", -1))
 list_stien = []
-list_stien.append(Prekazka(screen, 500, 200, "green"))
+list_stien.append(Prekazka(screen, 500, 500, "green"))
 
 
 while running:
@@ -29,6 +29,10 @@ while running:
         dx -= 4
     if keys[pygame.K_d]:
         dx += 4
+
+    # posun prekážok
+    for prekazka in list_prekazok:
+        prekazka.move_horizontal()
 
     # 1) najprv posuň auto
     auto1.move(dx, dy)

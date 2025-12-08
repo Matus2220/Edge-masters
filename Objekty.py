@@ -6,7 +6,7 @@ class Auto:
         self.color = color
         self.x = x
         self.y = y
-        self.rect = pygame.Rect(self.x, self.y, 10, 10)
+        self.rect = pygame.Rect(self.x, self.y, 30, 15)
 
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
@@ -20,15 +20,28 @@ class Auto:
     def get_rect(self):
         return self.rect
 
-
-
 class Prekazka:
-    def __init__(self, screen, x, y, color):
+    def __init__(self, screen, x, y, color, direction=1, speed=3):
         self.screen = screen
         self.color = color
         self.x = x
         self.y = y
-        self.rect = pygame.Rect(self.x, self.y, 50, 50)  
+        self.speed = speed
+        self.direction = direction
+        self.rect = pygame.Rect(self.x, self.y, 50, 50)
+
+    def move_horizontal(self):
+        # posun po osi X
+        self.x += self.speed * self.direction
+        self.rect.x = self.x
+
+        # ak vyjde mimo obrazovky → presun späť na opačnú stranu
+        if self.x > 1280:         # mimo vpravo
+            self.x = -50         # objaví sa vľavo
+        elif self.x < -50:       # mimo vľavo
+            self.x = 1280        # objaví sa vpravo
+
+        self.rect.x = self.x
 
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
@@ -39,6 +52,8 @@ class Prekazka:
 
     def get_rect(self):
         return self.rect
+
+
 
 
 class Stena:
@@ -58,3 +73,5 @@ class Stena:
 
     def get_rect(self):
         return self.rect
+
+
