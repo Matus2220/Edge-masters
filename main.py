@@ -22,9 +22,14 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
     enemy_car = Auto(screen, enemy_pos_dict["x"], enemy_pos_dict["y"], "red")
 
     list_prekazok = [
+        #hore
         Prekazka(screen, 100, 50, "red", -1, 3),
         Prekazka(screen, 100, 150, "orange", -1, 2),
-        Prekazka(screen, 100, 250, "blue", -1, 1)
+        Prekazka(screen, 100, 250, "blue", -1, 1),
+        #dole
+        Prekazka(screen, 100, 450, "red", -1, 3),
+        Prekazka(screen, 100, 550, "orange", -1, 2),
+        Prekazka(screen, 100, 650, "blue", -1, 1)
     ]
 
     while running:
