@@ -5,14 +5,14 @@ from main import run_game
 serverIP = input("Zadaj IP servera: ")
 server = (str(serverIP), 5678)
 
-host = socket.gethostbyname(socket.gethostname())
+host = "0.0.0.0"              # ← presne takto
 port = random.randint(6000, 10000)
 
-print(f"Klient je poskytovany na IP -> {str(host)}")
+print(f"Klient je poskytovany na IP -> {socket.gethostbyname(socket.gethostname())}")
 print(f"Klient bezi na porte {port}")
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# s.bind((host, port))
+s.bind((host, port))
 
 name = input("Zadaj svoj nick: ")
 
