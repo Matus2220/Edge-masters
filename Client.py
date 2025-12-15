@@ -20,7 +20,7 @@ name = input("Zadaj svoj nick: ")
 start_event = threading.Event()
 
 # globálna pozícia súpera, ktorú bude čítať run_game
-enemy_pos = {"x": 100, "y": 100}  # default
+enemy_pos = {"x": 100, "y": 50}  # default
 
 def recive(sock):
     global enemy_pos
