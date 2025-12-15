@@ -21,14 +21,14 @@ class Auto:
         return self.rect
 
 class Prekazka:
-    def __init__(self, screen, x, y, color, direction=1, speed=3):
+    def __init__(self, screen, x, y, color, direction=1, speed=3,):
         self.screen = screen
         self.color = color
         self.x = x
         self.y = y
         self.speed = speed
         self.direction = direction
-        self.rect = pygame.Rect(self.x, self.y, 50, 50)
+        self.rect = pygame.Rect(self.x, self.y, 200, 80)
 
     def move_horizontal(self):
         # posun po osi X
@@ -57,12 +57,10 @@ class Prekazka:
 
 
 class Stena:
-    def __init__(self, screen, x, y, color):
+    def __init__(self, screen, x, y, width, height, color):
         self.screen = screen
         self.color = color
-        self.x = x
-        self.y = y
-        self.rect = pygame.Rect(self.x, self.y, 50, 50)  
+        self.rect = pygame.Rect(x, y, width, height)
 
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)

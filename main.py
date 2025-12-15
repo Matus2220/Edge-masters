@@ -1,23 +1,35 @@
 import pygame
-from Objekty import Auto, Prekazka
+from Objekty import Auto, Prekazka, Stena
 
 pygame.init()
+WIDTH, HEIGHT = 1280, 720
+THICKNESS = 5
 screen = pygame.display.set_mode((1280, 720))
-auto1 = Auto(screen, 10, 10, "yellow")
+auto1 = Auto(screen, 100, 500, "yellow")
 prekazka_test = Prekazka(screen, 100, 100, "red")
 clock = pygame.time.Clock()
 running = True
 list_prekazok = []
-list_prekazok.append(Prekazka(screen, 100, 100, "red", 1))
-list_prekazok.append(Prekazka(screen, 300, 250, "orange", -1))
+list_prekazok.append(Prekazka(screen, 100, 50, "red", -1, 3))
+list_prekazok.append(Prekazka(screen, 100, 150, "orange", -1, 2))
+list_prekazok.append(Prekazka(screen, 100, 250, "blue", -1, 1))
 list_stien = []
-list_stien.append(Prekazka(screen, 500, 500, "green"))
+list_stien.append(Stena(screen, 0, 50, 5, 5, "green"))
 
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    list_stien = [
+        # hore
+        Stena(screen, 0, 0, WIDTH, THICKNESS, "green"),
+        # stred
+        Stena(screen, 0, 355, WIDTH, THICKNESS, "green"),
+        # dole 2
+        Stena(screen, 0, HEIGHT - THICKNESS, WIDTH, THICKNESS, "green"),
+    ]
 
     dx, dy = 0, 0
     keys = pygame.key.get_pressed()
