@@ -1,5 +1,5 @@
 import pygame
-from Objekty import Auto, Prekazka
+from Objekty import Auto, Prekazka, Stena
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -11,8 +11,9 @@ list_prekazok = []
 list_prekazok.append(Prekazka(screen, 100, 100, "red", 1))
 list_prekazok.append(Prekazka(screen, 300, 250, "orange", -1))
 list_stien = []
-list_stien.append(Prekazka(screen, 500, 500, "green"))
+list_stien.append(Stena(screen, 500, 500, "green"))
 
+n = 88
 
 while running:
     for event in pygame.event.get():
