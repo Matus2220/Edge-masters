@@ -2,19 +2,6 @@ import socket, random
 import threading
 from main import run_game
 
-def recive(sock):
-    while True:
-        try:
-            data, address = sock.recvfrom(1024)
-            msg = data.decode('utf-8')
-            if msg == "START":
-                print("Protivnik je pripojeny, spustam hru!")
-                run_game(sock, name, msg.split(" ")[1], server)
-            else:
-                print(msg)
-        except:
-            break
-
 serverIP = input("Zadaj IP servera: ")
 server = (str(serverIP), 5678)
 
@@ -27,12 +14,54 @@ print(f"Klient bezi na porte {port}")
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((host, port))
 
-threading.Thread(target=recive, args=(s,), daemon=True).start()
-
 name = input("Zadaj svoj nick: ")
+
+# event – čakanie na START od servera
+start_event = threading.Event()
+
+# globálna pozícia súpera, ktorú bude čítať run_game
+enemy_pos = {"x": 100, "y": 100}  # default
+
+def recive(sock):
+    global enemy_pos
+    while True:
+        try:
+            data, address = sock.recvfrom(1024)
+            msg = data.decode('utf-8')
+
+            if msg == "START":
+                print("Protivnik je pripojeny, spustam hru!")
+                start_event.set()
+                
+            if msg == "END":
+                print("\n ------------------------------------------------ \n VYHRAL SI! \n------------------------------------------------ \n")
+                sock.close()
+                exit(0)
+
+            elif msg.startswith("POS;"):
+                # format: POS;meno;x;y
+                parts = msg.split(";")
+                if len(parts) == 4:
+                    _, nick, x_str, y_str = parts
+                    if nick != name:
+                        enemy_pos["x"] = int(x_str)
+                        enemy_pos["y"] = int(y_str)
+            else:
+                print(msg)
+        except:
+            break
+
+# spusti prijímacie vlákno
+threading.Thread(target=recive, args=(s,), daemon=True).start()
 
 # pošli úvodnú správu, aby ťa server zaregistroval
 s.sendto(f"{name} sa pripojil.".encode('utf-8'), server)
-
 print("Cakam na protivnika...")
 
+# počkaj na START
+start_event.wait()
+
+# spusti hru – odovzdáme socket, svoje meno, meno súpera a server adresu + referenciu na enemy_pos
+from functools import partial
+run_game(s, name, "enemy", server, enemy_pos)
+s.close()

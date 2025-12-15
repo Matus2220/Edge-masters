@@ -4,26 +4,22 @@ from Objekty import Auto, Prekazka, Stena
 WIDTH, HEIGHT = 1280, 720
 THICKNESS = 5
 
-def loose(sock):
-    print("Prehral si!")
+def loose(sock, my_name: str, server_addr):
+    print("\n ------------------------------------------------ \n PREHRAL SI! \n------------------------------------------------ \n")
+    msg = f"LOOSE;{my_name}"
+    sock.sendto(msg.encode("utf-8"), server_addr)
     sock.close()
     pygame.quit()
     exit(0)
 
-def win(sock):
-    print("Vyhral si!")
-    sock.close()
-    pygame.quit()
-    exit(0)
-
-def run_game(sock, my_name: str, enemy_name: str, server_addr):
+def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     running = True
 
     my_car = Auto(screen, 100, 500, "yellow")
-    enemy_car = Auto(screen, 100, 100, "red")  # zatiaľ statický protivník
+    enemy_car = Auto(screen, enemy_pos_dict["x"], enemy_pos_dict["y"], "red")
 
     list_prekazok = [
         Prekazka(screen, 100, 50, "red", -1, 3),
@@ -56,18 +52,25 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr):
         for prekazka in list_prekazok:
             prekazka.move_horizontal()
 
-        # pohyb iba môjho auta
+        # pohyb môjho auta
         my_car.move(dx, dy)
-        
-        msg = f"POS;{my_name};{my_car.x};{my_car.y}"
-        sock.sendto(msg.encode("utf-8"), server_addr)  # server_addr = (IP, port)
 
-        # kolizia s prekazkami
+        # POS správa na server
+        msg = f"POS;{my_name};{my_car.x};{my_car.y}"
+        sock.sendto(msg.encode("utf-8"), server_addr)
+
+        # aktualizácia pozície súpera z enemy_pos_dict
+        enemy_car.x = enemy_pos_dict["x"]
+        enemy_car.y = enemy_pos_dict["y"]
+        enemy_car.rect.x = enemy_car.x
+        enemy_car.rect.y = enemy_car.y
+
+        # kolízia s prekážkami
         for prekazka in list_prekazok:
             if my_car.get_rect().colliderect(prekazka.get_rect()):
-                loose(sock)
+                loose(sock, my_name, server_addr)
 
-        # kolizia so stenami
+        # kolízia so stenami
         for stena in list_stien:
             if my_car.get_rect().colliderect(stena.get_rect()):
                 my_car.move(-dx, -dy)
