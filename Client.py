@@ -12,7 +12,7 @@ print(f"Klient je poskytovany na IP -> {str(host)}")
 print(f"Klient bezi na porte {port}")
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.bind((host, port))
+# s.bind((host, port))
 
 name = input("Zadaj svoj nick: ")
 
@@ -28,6 +28,7 @@ def recive(sock):
         try:
             data, address = sock.recvfrom(1024)
             msg = data.decode('utf-8')
+            print("DEBUG: prisla sprava:", repr(msg)) 
 
             if msg == "START":
                 print("Protivnik je pripojeny, spustam hru!")
@@ -63,5 +64,6 @@ start_event.wait()
 
 # spusti hru – odovzdáme socket, svoje meno, meno súpera a server adresu + referenciu na enemy_pos
 from functools import partial
+print("DEBUG: event je set, spustam run_game")  # <--- pridaj
 run_game(s, name, "enemy", server, enemy_pos)
 s.close()
