@@ -20,9 +20,17 @@ while True:
             s.sendto("START".encode("utf-8"), c)
         game_started = True
 
-    data = data.decode('utf-8')
-    print(f"Zadane udaje: {data}")
+    msg = data.decode("utf-8")
 
+    # ak je to pozícia, len ju prepošli súperovi, neprintuj
+    if msg.startswith("POS;"):
+        for c in clients:
+            if c != address:
+                s.sendto(data, c)
+        continue
+
+    # inak ide o „bežnú“ správu (chat, info...)
+    print(f"Zadane udaje: {msg}")
     for c in clients:
         if c != address:
-            s.sendto(data.encode('utf-8'), c)
+            s.sendto(data, c)
