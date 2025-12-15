@@ -1,6 +1,6 @@
 import socket, random
 import threading
-import main
+from main import start_game
 
 def recive(sock):
     while True:
@@ -9,8 +9,7 @@ def recive(sock):
             msg = data.decode('utf-8')
             if msg == "START":
                 print("Protivnik je pripojeny, spustam hru!")
-                # sem zavolaj funkciu, ktorá spustí tvoju hru, napr.:
-                # start_game()
+                start_game(sock, name, msg.split(" ")[1], server)
             else:
                 print(msg)
         except:

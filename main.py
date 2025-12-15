@@ -1,77 +1,86 @@
 import pygame
 from Objekty import Auto, Prekazka, Stena
 
-pygame.init()
 WIDTH, HEIGHT = 1280, 720
 THICKNESS = 5
-screen = pygame.display.set_mode((1280, 720))
-auto1 = Auto(screen, 100, 500, "yellow")
-prekazka_test = Prekazka(screen, 100, 100, "red")
-clock = pygame.time.Clock()
-running = True
-list_prekazok = []
-list_prekazok.append(Prekazka(screen, 100, 50, "red", -1, 3))
-list_prekazok.append(Prekazka(screen, 100, 150, "orange", -1, 2))
-list_prekazok.append(Prekazka(screen, 100, 250, "blue", -1, 1))
-list_stien = []
-list_stien.append(Prekazka(screen, 500, 500, "green"))
 
-n = 88
+def loose(sock):
+    print("Prehral si!")
+    sock.close()
+    pygame.quit()
+    exit(0)
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+def win(sock):
+    print("Vyhral si!")
+    sock.close()
+    pygame.quit()
+    exit(0)
 
-    list_stien = [
-        # hore
-        Stena(screen, 0, 0, WIDTH, THICKNESS, "green"),
-        # stred
-        Stena(screen, 0, 355, WIDTH, THICKNESS, "green"),
-        # dole 2
-        Stena(screen, 0, HEIGHT - THICKNESS, WIDTH, THICKNESS, "green"),
+def run_game(sock, my_name: str, enemy_name: str, server_addr):
+    pygame.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    clock = pygame.time.Clock()
+    running = True
+
+    my_car = Auto(screen, 100, 500, "yellow")
+    enemy_car = Auto(screen, 100, 100, "red")  # zatiaľ statický protivník
+
+    list_prekazok = [
+        Prekazka(screen, 100, 50, "red", -1, 3),
+        Prekazka(screen, 100, 150, "orange", -1, 2),
+        Prekazka(screen, 100, 250, "blue", -1, 1)
     ]
 
-    dx, dy = 0, 0
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        dy -= 4
-    if keys[pygame.K_s]:
-        dy += 4
-    if keys[pygame.K_a]:
-        dx -= 4
-    if keys[pygame.K_d]:
-        dx += 4
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    # posun prekážok
-    for prekazka in list_prekazok:
-        prekazka.move_horizontal()
+        list_stien = [
+            Stena(screen, 0, 0, WIDTH, THICKNESS, "green"),
+            Stena(screen, 0, 355, WIDTH, THICKNESS, "green"),
+            Stena(screen, 0, HEIGHT - THICKNESS, WIDTH, THICKNESS, "green"),
+        ]
 
-    # 1) najprv posuň auto
-    auto1.move(dx, dy)
+        dx, dy = 0, 0
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            dy -= 4
+        if keys[pygame.K_s]:
+            dy += 4
+        if keys[pygame.K_a]:
+            dx -= 4
+        if keys[pygame.K_d]:
+            dx += 4
 
-    # 2) kolízia s prekážkami – koniec hry
-    for prekazka in list_prekazok:
-        if auto1.get_rect().colliderect(prekazka.get_rect()):
-            print("Kolizia s prekazkou!")
-            running = False
+        for prekazka in list_prekazok:
+            prekazka.move_horizontal()
 
-    # 3) kolízia so stenami – vráť sa späť
-    for stena in list_stien:
-        if auto1.get_rect().colliderect(stena.get_rect()):
-            print("Kolizia so stenou!")
-            # vráť posledný pohyb
-            auto1.move(-dx, -dy)
+        # pohyb iba môjho auta
+        my_car.move(dx, dy)
+        
+        msg = f"POS;{my_name};{my_car.x};{my_car.y}"
+        sock.sendto(msg.encode("utf-8"), server_addr)  # server_addr = (IP, port)
 
-    # vykreslenie
-    screen.fill((0, 0, 0))
-    auto1.draw()
-    for prekazka in list_prekazok:
-        prekazka.draw()
-    for stena in list_stien:
-        stena.draw()
+        # kolizia s prekazkami
+        for prekazka in list_prekazok:
+            if my_car.get_rect().colliderect(prekazka.get_rect()):
+                loose(sock)
 
-    pygame.display.flip()
-    clock.tick(60)
+        # kolizia so stenami
+        for stena in list_stien:
+            if my_car.get_rect().colliderect(stena.get_rect()):
+                my_car.move(-dx, -dy)
 
-pygame.quit()
+        screen.fill((0, 0, 0))
+        my_car.draw()
+        enemy_car.draw()
+        for prekazka in list_prekazok:
+            prekazka.draw()
+        for stena in list_stien:
+            stena.draw()
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
