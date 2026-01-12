@@ -4,6 +4,9 @@ from Objekty import Auto, Prekazka, Stena
 WIDTH, HEIGHT = 1280, 720
 THICKNESS = 5
 
+def choose_car():
+    pass
+
 def loose(sock, my_name: str, server_addr):
     print("\n ------------------------------------------------ \n PREHRAL SI! \n------------------------------------------------ \n")
     msg = f"LOOSE;{my_name}"
@@ -18,7 +21,7 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
     clock = pygame.time.Clock()
     running = True
 
-    my_car = Auto(screen, 100, 500, "yellow")
+    my_car = Auto(screen, 10, 10, "yellow")
     enemy_car = Auto(screen, enemy_pos_dict["x"], enemy_pos_dict["y"], "red")
 
     list_prekazok = [
@@ -92,3 +95,4 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
         clock.tick(60)
 
     pygame.quit()
+    
