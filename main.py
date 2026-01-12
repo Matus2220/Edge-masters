@@ -65,7 +65,8 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
 
         # POS správa na server
         msg = f"POS;{my_name};{my_car.x};{my_car.y}"
-        sock.sendto(msg.encode("utf-8"), server_addr)
+        if sock != None:
+            sock.sendto(msg.encode("utf-8"), server_addr)
 
         # aktualizácia pozície súpera z enemy_pos_dict
         enemy_car.x = enemy_pos_dict["x"]
