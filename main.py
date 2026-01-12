@@ -18,6 +18,7 @@ def loose(sock, my_name: str, server_addr):
 def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    bg = pygame.image.load("cesta.png")
     clock = pygame.time.Clock()
     running = True
 
@@ -41,9 +42,9 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
                 running = False
 
         list_stien = [
-            Stena(screen, 0, 0, WIDTH, THICKNESS, "green"),
-            Stena(screen, 0, 355, WIDTH, THICKNESS, "green"),
-            Stena(screen, 0, HEIGHT - THICKNESS, WIDTH, THICKNESS, "green"),
+            Stena(screen, 0, 0, WIDTH, THICKNESS, None),
+            Stena(screen, 0, 355, WIDTH, THICKNESS, None),
+            Stena(screen, 0, HEIGHT - THICKNESS, WIDTH, THICKNESS, None),
         ]
 
         dx, dy = 0, 0
@@ -84,7 +85,7 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
             if my_car.get_rect().colliderect(stena.get_rect()):
                 my_car.move(-dx, -dy)
 
-        screen.fill((0, 0, 0))
+        screen.blit(bg, (0, 0))
         my_car.draw()
         enemy_car.draw()
         for prekazka in list_prekazok:

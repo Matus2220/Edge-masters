@@ -57,13 +57,14 @@ class Prekazka:
 
 
 class Stena:
-    def __init__(self, screen, x, y, width, height, color):
+    def __init__(self, screen, x, y, width, height, color=None):
         self.screen = screen
         self.color = color
         self.rect = pygame.Rect(x, y, width, height)
 
     def draw(self):
-        pygame.draw.rect(self.screen, self.color, self.rect)
+        if self.color:
+            pygame.draw.rect(self.screen, self.color, self.rect)
         
     def move(self, speed):
         self.y += speed
