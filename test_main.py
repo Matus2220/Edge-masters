@@ -5,8 +5,7 @@ from Objekty import Auto, Prekazka, Mala_prekazka, Stredna_prekazka, Velka_preka
 WIDTH, HEIGHT = 1280, 720
 THICKNESS = 5
 
-def choose_car():
-    pass
+
     
 def test():
     pygame.init()
@@ -17,7 +16,6 @@ def test():
     line1 = False
     line2 = True
     line3 = False
-
 
     my_car = Auto(screen, 10, 250, "green")
     random_zoznam = ["small", "normal", "large"]
@@ -62,13 +60,21 @@ def test():
         dx, dy = 0, 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            dy -= 8
+            dy -= 9
         if keys[pygame.K_s]:
-            dy += 8
+            dy += 9
         if keys[pygame.K_a]:
-            dx -= 8
+            dx -= 9
         if keys[pygame.K_d]:
-            dx += 8
+            dx += 9
+        if keys[pygame.K_UP]:
+            dy -= 9
+        if keys[pygame.K_DOWN]:
+            dy += 9
+        if keys[pygame.K_LEFT]:
+            dx -= 9
+        if keys[pygame.K_RIGHT]:
+            dx += 9
 
         # VYTVORENIE NOVEJ PREKÁŽKY
         if line1:

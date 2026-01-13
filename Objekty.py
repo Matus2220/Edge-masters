@@ -66,15 +66,23 @@ class Mala_prekazka(Prekazka):
         
         
 class Stredna_prekazka(Prekazka):
-    def __init__(self, screen, x, y, color, direction, speed, line):
+    def __init__(self, screen, x, y, color, direction, speed, line, img):
         super().__init__(screen, x, y, color, direction, speed, line)
         self.rect = pygame.Rect(self.x, self.y, 80, 50)
+        self.img = img
+        
+    def draw(self):
+        self.screen.blit(self.img, (self.x, self.y))
         
         
 class Velka_prekazka(Prekazka):
-    def __init__(self, screen, x, y, color, direction, speed, line):
+    def __init__(self, screen, x, y, color, direction, speed, line, img):
         super().__init__(screen, x, y, color, direction, speed, line)
         self.rect = pygame.Rect(self.x, self.y, 200, 60)
+        self.img = img
+        
+    def draw(self):
+        self.screen.blit(self.img, (self.x, self.y))
 
 
 class Stena:

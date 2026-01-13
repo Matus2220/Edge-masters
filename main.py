@@ -1,12 +1,11 @@
 import pygame
 import random
-from Objekty import Auto, Prekazka, Stena
+from Objekty import Auto, Mala_prekazka, Stredna_prekazka, Velka_prekazka, Stena
 
 WIDTH, HEIGHT = 1280, 720
 THICKNESS = 5
 
-def choose_car():
-    pass
+
 
 def loose(sock, my_name: str, server_addr):
     print("\n ------------------------------------------------ \n PREHRAL SI! \n------------------------------------------------ \n")
@@ -22,61 +21,143 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
     bg = pygame.image.load("cesta.png")
     clock = pygame.time.Clock()
     running = True
-    prev_prekazka = None
+    line1 = False
+    line2 = True
+    line3 = False
 
-    my_car = Auto(screen, 10, 10, "yellow")
+    my_car = Auto(screen, 10, 250, "green")
     enemy_car = Auto(screen, enemy_pos_dict["x"], enemy_pos_dict["y"], "red")
+    random_zoznam = ["small", "normal", "large"]
+    pozicie_prekazok = {
+        "small": {
+            "x": 1290,
+            "lines-y": [85, 165, 250],
+            "speed": 12,
+            "img": pygame.image.load("autoR.png"),
+        },
+        "normal": {
+            "x": 1290,
+            "lines-y": [75, 155, 240],
+            "speed": 8,
+            "img": pygame.image.load("autoM.png"),
+        },
+        "large": {
+            "x": 1290,
+            "lines-y": [70, 150, 240],
+            "speed": 4,
+            "img": pygame.image.load("autoH.png"),
+        }
+    }
+    
+    list_prekazok = [
+        Stredna_prekazka(screen, 1290, 75, "blue", -1, 8, 1, pygame.image.load("autoM.png")),
+        Velka_prekazka(screen, 1290, 240, "red", -1, 3, 3, pygame.image.load("autoH.png")),
+    ]
 
-    sirky = {"small": 30, "normal": 50, "large": 90}
-    list_prekazok = []  # definuj mimo
+    list_stien = [
+        Stena(screen, 0, 50, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 315, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 405, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 665, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 0, 10, 720, None),
+        Stena(screen, 1280, 0, 10, 720, None),
+    ]
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        # NÁHODNÁ ZMENA PREKÁŽOK KAŽDÚ SEKUNDU
-        if pygame.time.get_ticks() % 1000 < 16:  # ~1s (60fps)
-            prekazka_typ = random.choice(["small", "normal", "large"])
-            if prekazka_typ == prev_prekazka:
-                prekazka_typ = random.choice(["small", "normal", "large"])
-            prev_prekazka = prekazka_typ
-            
-            # VYTVOR NOVÉ PREKÁŽKY
-            list_prekazok = [
-                Prekazka(screen, 100, 50, "red", -1, 3),
-                Prekazka(screen, 300, 150, "orange", -1, 2),
-                Prekazka(screen, 500, 250, "blue", -1, 1),
-                Prekazka(screen, 200, 450, "red", -1, 3),
-                Prekazka(screen, 400, 550, "orange", -1, 2),
-                Prekazka(screen, 600, 650, "blue", -1, 1)
-            ]
-            
-            # NASTAV VEĽKOSŤ
-            for p in list_prekazok:
-                p.width = sirky[prekazka_typ]
-                p.height = 60
-                p.rect = pygame.Rect(p.x, p.y, p.width, p.height)
-
-        list_stien = [
-            Stena(screen, 0, 0, WIDTH, THICKNESS, None),
-            Stena(screen, 0, 355, WIDTH, THICKNESS, None),
-            Stena(screen, 0, HEIGHT - THICKNESS, WIDTH, THICKNESS, None),
-        ]
-
         dx, dy = 0, 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            dy -= 4
+            dy -= 9
         if keys[pygame.K_s]:
-            dy += 4
+            dy += 9
         if keys[pygame.K_a]:
-            dx -= 4
+            dx -= 9
         if keys[pygame.K_d]:
-            dx += 4
+            dx += 9
+        if keys[pygame.K_UP]:
+            dy -= 9
+        if keys[pygame.K_DOWN]:
+            dy += 9
+        if keys[pygame.K_LEFT]:
+            dx -= 9
+        if keys[pygame.K_RIGHT]:
+            dx += 9
 
+        # VYTVORENIE NOVEJ PREKÁŽKY
+        if line1:
+            random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Mala_prekazka) == 2 and random_choice == "small":
+                random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Stredna_prekazka) == 2 and random_choice == "normal":
+                random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Velka_prekazka) == 2 and random_choice == "large":
+                random_choice = random.choice(random_zoznam)
+            x_prekazka = pozicie_prekazok[random_choice]
+            match random_choice:
+                case "small":
+                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][0], "yellow", -1, x_prekazka["speed"], 1, x_prekazka["img"])
+                case "normal":
+                    nahodna_prekazka = Stredna_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][0], "blue", -1, x_prekazka["speed"], 1, x_prekazka["img"])
+                case "large":
+                    nahodna_prekazka = Velka_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][0], "red", -1, x_prekazka["speed"], 1, x_prekazka["img"])
+            list_prekazok.append(nahodna_prekazka)
+            line1 = False
+            
+        if line2:
+            random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Mala_prekazka) == 2 and random_choice == "small":
+                random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Stredna_prekazka) == 2 and random_choice == "normal":
+                random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Velka_prekazka) == 2 and random_choice == "large":
+                random_choice = random.choice(random_zoznam)
+            x_prekazka = pozicie_prekazok[random_choice]
+            match random_choice:
+                case "small":
+                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][1], "yellow", -1, x_prekazka["speed"], 2, x_prekazka["img"])
+                case "normal":
+                    nahodna_prekazka = Stredna_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][1], "blue", -1, x_prekazka["speed"], 2, x_prekazka["img"])
+                case "large":
+                    nahodna_prekazka = Velka_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][1], "red", -1, x_prekazka["speed"], 2, x_prekazka["img"])
+            list_prekazok.append(nahodna_prekazka)
+            line2 = False
+            
+        if line3:
+            random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Mala_prekazka) == 2 and random_choice == "small":
+                random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Stredna_prekazka) == 2 and random_choice == "normal":
+                random_choice = random.choice(random_zoznam)
+            while list_prekazok.count(Velka_prekazka) == 2 and random_choice == "large":
+                random_choice = random.choice(random_zoznam) 
+            x_prekazka = pozicie_prekazok[random_choice]
+            match random_choice:
+                case "small":
+                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][2], "yellow", -1, x_prekazka["speed"], 3, x_prekazka["img"])
+                case "normal":
+                    nahodna_prekazka = Stredna_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][2], "blue", -1, x_prekazka["speed"], 3, x_prekazka["img"])
+                case "large":
+                    nahodna_prekazka = Velka_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][2], "red", -1, x_prekazka["speed"], 3, x_prekazka["img"])
+            list_prekazok.append(nahodna_prekazka)
+            line3 = False
+
+            
         for prekazka in list_prekazok:
-            prekazka.move_horizontal()
+            if prekazka.move_horizontal()[0] == False:
+                list_prekazok.remove(prekazka)
+                match (prekazka.move_horizontal()[1]):
+                    case 1:
+                        line1 = True
+                    case 2:
+                        line2 = True
+                    case 3:
+                        line3 = True
+            else:
+                prekazka.move_horizontal()
 
         # pohyb môjho auta
         my_car.move(dx, dy)
@@ -95,7 +176,9 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
         # kolízia s prekážkami
         for prekazka in list_prekazok:
             if my_car.get_rect().colliderect(prekazka.get_rect()):
+                pygame.quit()
                 loose(sock, my_name, server_addr)
+                exit(0)
 
         # kolízia so stenami
         for stena in list_stien:
