@@ -21,7 +21,7 @@ class Auto:
         return self.rect
 
 class Prekazka:
-    def __init__(self, screen, x, y, color, direction, speed, line):
+    def __init__(self, screen, x, y, color, direction, speed, line,):
         self.line = line
         self.screen = screen
         self.color = color
@@ -56,9 +56,13 @@ class Prekazka:
 
 
 class Mala_prekazka(Prekazka):
-    def __init__(self, screen, x, y, color, direction, speed, line):
+    def __init__(self, screen, x, y, color, direction, speed, line, img):
         super().__init__(screen, x, y, color, direction, speed, line)
         self.rect = pygame.Rect(self.x, self.y, 70, 35)
+        self.img = img
+    
+    def draw(self):
+        self.screen.blit(self.img, (self.x, self.y))
         
         
 class Stredna_prekazka(Prekazka):

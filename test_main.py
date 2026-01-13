@@ -26,6 +26,7 @@ def test():
             "x": 1290,
             "lines-y": [85, 165, 250],
             "speed": 12,
+            "img": pygame.image.load("autoR.png"),
         },
         "normal": {
             "x": 1290,
@@ -75,17 +76,17 @@ def test():
                 random_choice = random.choice(random_zoznam)
             while list_prekazok.count(Velka_prekazka) == 2 and random_choice == "large":
                 random_choice = random.choice(random_zoznam)
-
             x_prekazka = pozicie_prekazok[random_choice]
             match random_choice:
                 case "small":
-                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][0], "yellow", -1, x_prekazka["speed"], 1)
+                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][0], "yellow", -1, x_prekazka["speed"], 1, x_prekazka["img"])
                 case "normal":
                     nahodna_prekazka = Stredna_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][0], "blue", -1, x_prekazka["speed"], 1)
                 case "large":
                     nahodna_prekazka = Velka_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][0], "red", -1, x_prekazka["speed"], 1)
             list_prekazok.append(nahodna_prekazka)
             line1 = False
+            
         if line2:
             random_choice = random.choice(random_zoznam)
             while list_prekazok.count(Mala_prekazka) == 2 and random_choice == "small":
@@ -94,17 +95,17 @@ def test():
                 random_choice = random.choice(random_zoznam)
             while list_prekazok.count(Velka_prekazka) == 2 and random_choice == "large":
                 random_choice = random.choice(random_zoznam)
-                
             x_prekazka = pozicie_prekazok[random_choice]
             match random_choice:
                 case "small":
-                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][1], "yellow", -1, x_prekazka["speed"], 2)
+                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][1], "yellow", -1, x_prekazka["speed"], 2, x_prekazka["img"])
                 case "normal":
                     nahodna_prekazka = Stredna_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][1], "blue", -1, x_prekazka["speed"], 2)
                 case "large":
                     nahodna_prekazka = Velka_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][1], "red", -1, x_prekazka["speed"], 2)
             list_prekazok.append(nahodna_prekazka)
             line2 = False
+            
         if line3:
             random_choice = random.choice(random_zoznam)
             while list_prekazok.count(Mala_prekazka) == 2 and random_choice == "small":
@@ -112,12 +113,11 @@ def test():
             while list_prekazok.count(Stredna_prekazka) == 2 and random_choice == "normal":
                 random_choice = random.choice(random_zoznam)
             while list_prekazok.count(Velka_prekazka) == 2 and random_choice == "large":
-                random_choice = random.choice(random_zoznam)
-                
+                random_choice = random.choice(random_zoznam) 
             x_prekazka = pozicie_prekazok[random_choice]
             match random_choice:
                 case "small":
-                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][2], "yellow", -1, x_prekazka["speed"], 3)
+                    nahodna_prekazka = Mala_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][2], "yellow", -1, x_prekazka["speed"], 3, x_prekazka["img"])
                 case "normal":
                     nahodna_prekazka = Stredna_prekazka(screen, x_prekazka["x"], x_prekazka["lines-y"][2], "blue", -1, x_prekazka["speed"], 3)
                 case "large":
