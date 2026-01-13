@@ -21,7 +21,7 @@ class Auto:
         return self.rect
 
 class Prekazka:
-    def __init__(self, screen, x, y, color, direction, speed, line,):
+    def __init__(self, screen, x, y, color, direction, speed, line, obstacle_id=None):
         self.line = line
         self.screen = screen
         self.color = color
@@ -29,6 +29,7 @@ class Prekazka:
         self.y = y
         self.speed = speed
         self.direction = direction
+        self.obstacle_id = obstacle_id  # Unikátne ID pre synchronizáciu
         self.rect = pygame.Rect(self.x, self.y, 200, 80)
 
     def move_horizontal(self):
@@ -53,36 +54,49 @@ class Prekazka:
 
     def get_rect(self):
         return self.rect
+    
+    def get_type(self):
+        """Vráti typ prekážky pre serializáciu"""
+        return "unknown"  # Override v podtriedach
 
 
 class Mala_prekazka(Prekazka):
-    def __init__(self, screen, x, y, color, direction, speed, line, img):
-        super().__init__(screen, x, y, color, direction, speed, line)
+    def __init__(self, screen, x, y, color, direction, speed, line, img, obstacle_id=None):
+        super().__init__(screen, x, y, color, direction, speed, line, obstacle_id)
         self.rect = pygame.Rect(self.x, self.y, 70, 35)
         self.img = img
     
     def draw(self):
         self.screen.blit(self.img, (self.x, self.y))
+    
+    def get_type(self):
+        return "small"
         
         
 class Stredna_prekazka(Prekazka):
-    def __init__(self, screen, x, y, color, direction, speed, line, img):
-        super().__init__(screen, x, y, color, direction, speed, line)
+    def __init__(self, screen, x, y, color, direction, speed, line, img, obstacle_id=None):
+        super().__init__(screen, x, y, color, direction, speed, line, obstacle_id)
         self.rect = pygame.Rect(self.x, self.y, 80, 50)
         self.img = img
         
     def draw(self):
         self.screen.blit(self.img, (self.x, self.y))
+    
+    def get_type(self):
+        return "normal"
         
         
 class Velka_prekazka(Prekazka):
-    def __init__(self, screen, x, y, color, direction, speed, line, img):
-        super().__init__(screen, x, y, color, direction, speed, line)
+    def __init__(self, screen, x, y, color, direction, speed, line, img, obstacle_id=None):
+        super().__init__(screen, x, y, color, direction, speed, line, obstacle_id)
         self.rect = pygame.Rect(self.x, self.y, 200, 60)
         self.img = img
         
     def draw(self):
         self.screen.blit(self.img, (self.x, self.y))
+    
+    def get_type(self):
+        return "large"
 
 
 class Stena:
