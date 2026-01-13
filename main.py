@@ -41,19 +41,19 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
         "small": {
             "x": 1290,
             "lines-y": [85, 165, 250],
-            "speed": 12,
+            "speed": 18,  # 1.5x rýchlejšie (12 * 1.5)
             "img": pygame.image.load("autoR.png"),
         },
         "normal": {
             "x": 1290,
             "lines-y": [75, 155, 240],
-            "speed": 8,
+            "speed": 12,  # 1.5x rýchlejšie (8 * 1.5)
             "img": pygame.image.load("autoM.png"),
         },
         "large": {
             "x": 1290,
             "lines-y": [70, 150, 240],
-            "speed": 4,
+            "speed": 6,  # 1.5x rýchlejšie (4 * 1.5)
             "img": pygame.image.load("autoH.png"),
         }
     }
@@ -67,17 +67,17 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
     if is_host:
         obs_id1 = str(obstacle_id_counter)
         obstacle_id_counter += 1
-        obs1 = Stredna_prekazka(screen, 1290, 75, "blue", -1, 8, 1, pygame.image.load("autoM.png"), obs_id1)
+        obs1 = Stredna_prekazka(screen, 1290, 75, "blue", -1, 12, 1, pygame.image.load("autoM.png"), obs_id1)
         list_prekazok.append(obs1)
         obstacles_by_id[obs_id1] = obs1
-        obstacles_dict[obs_id1] = {"type": "normal", "x": 1290, "y": 75, "line": 1, "speed": 8}
+        obstacles_dict[obs_id1] = {"type": "normal", "x": 1290, "y": 75, "line": 1, "speed": 12}
         
         obs_id2 = str(obstacle_id_counter)
         obstacle_id_counter += 1
-        obs2 = Velka_prekazka(screen, 1290, 240, "red", -1, 4, 3, pygame.image.load("autoH.png"), obs_id2)
+        obs2 = Velka_prekazka(screen, 1290, 240, "red", -1, 6, 3, pygame.image.load("autoH.png"), obs_id2)
         list_prekazok.append(obs2)
         obstacles_by_id[obs_id2] = obs2
-        obstacles_dict[obs_id2] = {"type": "large", "x": 1290, "y": 240, "line": 3, "speed": 4}
+        obstacles_dict[obs_id2] = {"type": "large", "x": 1290, "y": 240, "line": 3, "speed": 6}
         
         # Pošli počiatočné prekážky klientovi
         for obs_id, obs_data in obstacles_dict.items():
@@ -316,10 +316,14 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
         enemy_car.rect.x = enemy_car.x
         enemy_car.rect.y = enemy_car.y
 
-        # Skontroluj výsledok hry z game_result_dict (ak súper vyhral)
+        # Skontroluj výsledok hry z game_result_dict (ak súper prehral, tento hráč vyhral)
+        # Táto kontrola sa musí dejať v každom cykle, aby sa zachytila zmena z receive() vlákna
         if game_result_dict.get("game_over", False) and not game_over:
             game_over = True
             game_result = game_result_dict.get("result", None)
+            # Ak súper prehral, tento hráč vyhral
+            if game_result == "win":
+                print("\n ------------------------------------------------ \n VYHRAL SI! \n------------------------------------------------ \n")
         
         # kolízia s prekážkami
         if not game_over:
@@ -348,7 +352,8 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
         
         # Zobrazenie výsledku hry
         if game_over:
-            font = pygame.font.Font(None, 72)
+            # Vytvor veľký font pre výsledok
+            font = pygame.font.Font(None, 96)
             if game_result == "lose":
                 text = font.render("PREHRAL SI!", True, (255, 0, 0))
             elif game_result == "win":
@@ -356,11 +361,13 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
             else:
                 text = font.render("HRA SKONCILA", True, (255, 255, 0))
             
+            # Zobraz text v strede obrazovky
             text_rect = text.get_rect(center=(WIDTH//2, HEIGHT//2))
             screen.blit(text, text_rect)
             
-            # Počkaj 3 sekundy pred ukončením
             pygame.display.flip()
+            
+            # Počkaj 3 sekundy pred ukončením
             time.sleep(3)
             break
 
