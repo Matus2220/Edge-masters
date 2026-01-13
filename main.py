@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 from Objekty import Auto, Mala_prekazka, Stredna_prekazka, Velka_prekazka, Stena
 
 WIDTH, HEIGHT = 1280, 720
@@ -8,26 +9,25 @@ THICKNESS = 5
 
 
 def loose(sock, my_name: str, server_addr):
-    print("\n ------------------------------------------------ \n PREHRAL SI! \n------------------------------------------------ \n")
+    """Oznámi serveru, že hráč prehral"""
     try:
         msg = f"LOOSE;{my_name}"
         sock.sendto(msg.encode("utf-8"), server_addr)
     except:
         pass  # Ignorujeme chyby pri odosielaní
-    try:
-        sock.close()
-    except:
-        pass
-    pygame.quit()
-    import sys
-    sys.exit(0)
 
-def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, obstacles_dict=None, is_host=False):
+def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, obstacles_dict=None, is_host=False, game_result_dict=None):
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     bg = pygame.image.load("cesta.png")
     clock = pygame.time.Clock()
     running = True
+    
+    # Premenné pre ukončenie hry
+    if game_result_dict is None:
+        game_result_dict = {"game_over": False, "result": None}
+    game_over = False
+    game_result = None  # "win" alebo "lose"
     
     if obstacles_dict is None:
         obstacles_dict = {}
@@ -74,10 +74,10 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
         
         obs_id2 = str(obstacle_id_counter)
         obstacle_id_counter += 1
-        obs2 = Velka_prekazka(screen, 1290, 240, "red", -1, 3, 3, pygame.image.load("autoH.png"), obs_id2)
+        obs2 = Velka_prekazka(screen, 1290, 240, "red", -1, 4, 3, pygame.image.load("autoH.png"), obs_id2)
         list_prekazok.append(obs2)
         obstacles_by_id[obs_id2] = obs2
-        obstacles_dict[obs_id2] = {"type": "large", "x": 1290, "y": 240, "line": 3, "speed": 3}
+        obstacles_dict[obs_id2] = {"type": "large", "x": 1290, "y": 240, "line": 3, "speed": 4}
         
         # Pošli počiatočné prekážky klientovi
         for obs_id, obs_data in obstacles_dict.items():
@@ -316,12 +316,22 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
         enemy_car.rect.x = enemy_car.x
         enemy_car.rect.y = enemy_car.y
 
+        # Skontroluj výsledok hry z game_result_dict (ak súper vyhral)
+        if game_result_dict.get("game_over", False) and not game_over:
+            game_over = True
+            game_result = game_result_dict.get("result", None)
+        
         # kolízia s prekážkami
-        for prekazka in list_prekazok:
-            if my_car.get_rect().colliderect(prekazka.get_rect()):
-                pygame.quit()
-                loose(sock, my_name, server_addr)
-                exit(0)
+        if not game_over:
+            for prekazka in list_prekazok:
+                if my_car.get_rect().colliderect(prekazka.get_rect()):
+                    # Hráč prehral
+                    game_over = True
+                    game_result = "lose"
+                    game_result_dict["game_over"] = True
+                    game_result_dict["result"] = "lose"
+                    loose(sock, my_name, server_addr)
+                    break
 
         # kolízia so stenami
         for stena in list_stien:
@@ -335,6 +345,24 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
             prekazka.draw()
         for stena in list_stien:
             stena.draw()
+        
+        # Zobrazenie výsledku hry
+        if game_over:
+            font = pygame.font.Font(None, 72)
+            if game_result == "lose":
+                text = font.render("PREHRAL SI!", True, (255, 0, 0))
+            elif game_result == "win":
+                text = font.render("VYHRAL SI!", True, (0, 255, 0))
+            else:
+                text = font.render("HRA SKONCILA", True, (255, 255, 0))
+            
+            text_rect = text.get_rect(center=(WIDTH//2, HEIGHT//2))
+            screen.blit(text, text_rect)
+            
+            # Počkaj 3 sekundy pred ukončením
+            pygame.display.flip()
+            time.sleep(3)
+            break
 
         pygame.display.flip()
         clock.tick(60)

@@ -40,11 +40,14 @@ def run(server_ip=None, is_hosting=False):
     # globálny dictionary pre prekážky (id -> {x, y, type, line, speed})
     obstacles_dict = {}
     
+    # globálna premenná pre výsledok hry
+    game_result_dict = {"game_over": False, "result": None}  # None, "win", alebo "lose"
+    
     # globálna premenná, či som host
     is_host = is_hosting
 
     # spusti prijímacie vlákno (NON-DAEMON, aby sa mohlo správne ukončiť)
-    recv_thread = threading.Thread(target=receive, args=(s, enemy_pos, obstacles_dict), daemon=False)
+    recv_thread = threading.Thread(target=receive, args=(s, enemy_pos, obstacles_dict, game_result_dict), daemon=False)
     recv_thread.start()
 
     # pošli úvodnú správu
@@ -81,7 +84,7 @@ def run(server_ip=None, is_hosting=False):
 
     print("DEBUG: event je set, spustam run_game")
     try:
-        run_game(s, name, "enemy", server, enemy_pos, obstacles_dict, is_host)
+        run_game(s, name, "enemy", server, enemy_pos, obstacles_dict, is_host, game_result_dict)
     finally:
         # Ukonči vlákno a zatvor socket
         shutdown_flag.set()
@@ -92,7 +95,7 @@ def run(server_ip=None, is_hosting=False):
         # Počkaj na ukončenie vlákna (max 1 sekunda)
         recv_thread.join(timeout=1.0)
 
-def receive(sock, enemy_pos, obstacles_dict):
+def receive(sock, enemy_pos, obstacles_dict, game_result_dict):
     global name, is_host, shutdown_flag
     # Nastav timeout, aby sme mohli pravidelne kontrolovať shutdown_flag
     sock.settimeout(0.5)
@@ -108,12 +111,12 @@ def receive(sock, enemy_pos, obstacles_dict):
                 start_event.set()
                 
             elif msg == "END":
+                # Súper prehral, tento hráč vyhral
                 print("\n ------------------------------------------------ \n VYHRAL SI! \n------------------------------------------------ \n")
+                # Nastav výsledok hry
+                game_result_dict["game_over"] = True
+                game_result_dict["result"] = "win"
                 shutdown_flag.set()
-                try:
-                    sock.close()
-                except:
-                    pass
                 return
 
             elif msg.startswith("POS;"):
