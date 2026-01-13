@@ -6,7 +6,7 @@ class Auto:
         self.color = color
         self.x = x
         self.y = y
-        self.rect = pygame.Rect(self.x, self.y, 30, 15)
+        self.rect = pygame.Rect(self.x, self.y, 60, 30)
 
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
@@ -21,7 +21,8 @@ class Auto:
         return self.rect
 
 class Prekazka:
-    def __init__(self, screen, x, y, color, direction=1, speed=3,):
+    def __init__(self, screen, x, y, color, direction, speed, line):
+        self.line = line
         self.screen = screen
         self.color = color
         self.x = x
@@ -36,10 +37,10 @@ class Prekazka:
         self.rect.x = self.x
 
         # ak vyjde mimo obrazovky → presun späť na opačnú stranu
-        if self.x > 1280:         # mimo vpravo
-            self.x = -50         # objaví sa vľavo
-        elif self.x < -50:       # mimo vľavo
-            self.x = 1280        # objaví sa vpravo
+        if self.x < -100:       # mimo vľavo
+            return (False, self.line)        # zmaze sa
+        else:
+            return (True, self.line)
 
         self.rect.x = self.x
 
@@ -54,6 +55,22 @@ class Prekazka:
         return self.rect
 
 
+class Mala_prekazka(Prekazka):
+    def __init__(self, screen, x, y, color, direction, speed, line):
+        super().__init__(screen, x, y, color, direction, speed, line)
+        self.rect = pygame.Rect(self.x, self.y, 70, 35)
+        
+        
+class Stredna_prekazka(Prekazka):
+    def __init__(self, screen, x, y, color, direction, speed, line):
+        super().__init__(screen, x, y, color, direction, speed, line)
+        self.rect = pygame.Rect(self.x, self.y, 80, 50)
+        
+        
+class Velka_prekazka(Prekazka):
+    def __init__(self, screen, x, y, color, direction, speed, line):
+        super().__init__(screen, x, y, color, direction, speed, line)
+        self.rect = pygame.Rect(self.x, self.y, 200, 60)
 
 
 class Stena:

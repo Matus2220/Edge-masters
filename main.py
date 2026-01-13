@@ -1,4 +1,5 @@
 import pygame
+import random
 from Objekty import Auto, Prekazka, Stena
 
 WIDTH, HEIGHT = 1280, 720
@@ -21,25 +22,41 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
     bg = pygame.image.load("cesta.png")
     clock = pygame.time.Clock()
     running = True
+    prev_prekazka = None
 
     my_car = Auto(screen, 10, 10, "yellow")
     enemy_car = Auto(screen, enemy_pos_dict["x"], enemy_pos_dict["y"], "red")
 
-    list_prekazok = [
-        #hore
-        Prekazka(screen, 100, 50, "red", -1, 3),
-        Prekazka(screen, 100, 150, "orange", -1, 2),
-        Prekazka(screen, 100, 250, "blue", -1, 1),
-        #dole
-        Prekazka(screen, 100, 450, "red", -1, 3),
-        Prekazka(screen, 100, 550, "orange", -1, 2),
-        Prekazka(screen, 100, 650, "blue", -1, 1)
-    ]
+    sirky = {"small": 30, "normal": 50, "large": 90}
+    list_prekazok = []  # definuj mimo
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+        # NÁHODNÁ ZMENA PREKÁŽOK KAŽDÚ SEKUNDU
+        if pygame.time.get_ticks() % 1000 < 16:  # ~1s (60fps)
+            prekazka_typ = random.choice(["small", "normal", "large"])
+            if prekazka_typ == prev_prekazka:
+                prekazka_typ = random.choice(["small", "normal", "large"])
+            prev_prekazka = prekazka_typ
+            
+            # VYTVOR NOVÉ PREKÁŽKY
+            list_prekazok = [
+                Prekazka(screen, 100, 50, "red", -1, 3),
+                Prekazka(screen, 300, 150, "orange", -1, 2),
+                Prekazka(screen, 500, 250, "blue", -1, 1),
+                Prekazka(screen, 200, 450, "red", -1, 3),
+                Prekazka(screen, 400, 550, "orange", -1, 2),
+                Prekazka(screen, 600, 650, "blue", -1, 1)
+            ]
+            
+            # NASTAV VEĽKOSŤ
+            for p in list_prekazok:
+                p.width = sirky[prekazka_typ]
+                p.height = 60
+                p.rect = pygame.Rect(p.x, p.y, p.width, p.height)
 
         list_stien = [
             Stena(screen, 0, 0, WIDTH, THICKNESS, None),
@@ -97,4 +114,3 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict):
         clock.tick(60)
 
     pygame.quit()
-    
