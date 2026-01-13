@@ -33,8 +33,8 @@ def run_game(sock, my_name: str, enemy_name: str, server_addr, enemy_pos_dict, o
         obstacles_dict = {}
     
     # Každý hráč vidí seba hore a súpera dole
-    my_car = Auto(screen, 10, 250, "green")  # Hráč je vždy hore
-    enemy_car = Auto(screen, enemy_pos_dict.get("x", 10), 450, "red")  # Súper je vždy dole
+    my_car = Auto(screen, 10, 250, "green", "MotorkaHrac.png")  # Hráč je vždy hore
+    enemy_car = Auto(screen, enemy_pos_dict.get("x", 10), 450, "red", "MotorkaOpp.png")  # Súper je vždy dole
     
     random_zoznam = ["small", "normal", "large"]
     pozicie_prekazok = {

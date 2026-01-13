@@ -1,15 +1,26 @@
 import pygame
 
 class Auto:
-    def __init__(self, screen, x, y, color):
+    def __init__(self, screen, x, y, color, img_path=None):
         self.screen = screen
         self.color = color
         self.x = x
         self.y = y
-        self.rect = pygame.Rect(self.x, self.y, 60, 30)
+        
+        # Načítaj obrázok ak je zadaný, inak použij rect
+        if img_path:
+            self.img = pygame.image.load(img_path)
+            # Získaj veľkosť obrázka pre rect
+            self.rect = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
+        else:
+            self.img = None
+            self.rect = pygame.Rect(self.x, self.y, 60, 30)
 
     def draw(self):
-        pygame.draw.rect(self.screen, self.color, self.rect)
+        if self.img:
+            self.screen.blit(self.img, (self.x, self.y))
+        else:
+            pygame.draw.rect(self.screen, self.color, self.rect)
 
     def move(self, dx, dy):
         self.x += dx
