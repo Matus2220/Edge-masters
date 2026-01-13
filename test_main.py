@@ -19,7 +19,7 @@ def test():
     line3 = False
 
 
-    my_car = Auto(screen, 10, 10, "green")
+    my_car = Auto(screen, 10, 250, "green")
     random_zoznam = ["small", "normal", "large"]
     pozicie_prekazok = {
         "small": {
@@ -46,9 +46,12 @@ def test():
     ]
 
     list_stien = [
-        Stena(screen, 0, 0, WIDTH, THICKNESS, None),
-        Stena(screen, 0, 355, WIDTH, THICKNESS, None),
-        Stena(screen, 0, HEIGHT - THICKNESS, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 50, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 315, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 405, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 665, WIDTH, THICKNESS, None),
+        Stena(screen, 0, 0, 10, 720, None),
+        Stena(screen, 1280, 0, 10, 720, None),
     ]
 
     while running:
